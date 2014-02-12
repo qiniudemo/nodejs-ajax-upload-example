@@ -18,15 +18,15 @@
 <meta name="description" content="File Upload widget with multiple file selection, drag&amp;drop support, progress bar and preview images for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads.">
 <meta name="viewport" content="width=device-width">
 <!-- Bootstrap CSS Toolkit styles -->
-<link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">
+<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 <!-- Generic page styles -->
 <link rel="stylesheet" href="assets/css/style.css">
 <!-- Bootstrap styles for responsive website layout, supporting different screen sizes -->
-<link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css">
+<link rel="stylesheet" href="assets/css/bootstrap-responsive.min.css">
 <!-- Bootstrap CSS fixes for IE6 -->
-<!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
+<!--[if lt IE 7]><link rel="stylesheet" href="assets/css/bootstrap-ie6.min.css"><![endif]-->
 <!-- Bootstrap Image Gallery styles -->
-<link rel="stylesheet" href="http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css">
+<link rel="stylesheet" href="http://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
 <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
 <link rel="stylesheet" href="assets/css/jquery.fileupload-ui.css">
 <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
@@ -211,14 +211,14 @@
 <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
 <script src="assets/js/vendor/jquery.ui.widget.js"></script>
 <!-- The Templates plugin is included to render the upload/download listings -->
-<script src="http://blueimp.github.com/JavaScript-Templates/tmpl.min.js"></script>
+<script src="http://blueimp.github.com/JavaScript-Templates/js/tmpl.min.js"></script>
 <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-<script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
+<script src="http://blueimp.github.com/JavaScript-Load-Image/js/load-image.min.js"></script>
 <!-- The Canvas to Blob plugin is included for image resizing functionality -->
-<script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js"></script>
+<script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
 <!-- Bootstrap JS and Bootstrap Image Gallery are not required, but included for the demo -->
-<script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
-<script src="http://blueimp.github.com/Bootstrap-Image-Gallery/js/bootstrap-image-gallery.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="http://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
 <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
 <script src="assets/js/jquery.iframe-transport.js"></script>
 <!-- The basic File Upload plugin -->
@@ -239,11 +239,22 @@
 <script type="text/javascript">
 $(function () {
     $.getJSON('http://127.0.0.1:8125/putauth.json', function(resp) {
+        console.log(resp)
         if (resp.code != 200) {
             alert("putAuth failed!");
         } else {
             var $bucketName = resp.data.bucket;
             var $uploadURL = resp.data.url;
+
+            $('#fileupload').on('fileuploadadd', function (e, data){
+                console.log('fileuploadadd')
+            })
+
+            $('#fileupload').on('fileuploaddone', function (e, data){
+                console.log('fileuploaddone')
+                console.log(data)
+            })
+
             // Initialize the jQuery File Upload widget:
             $('#fileupload').fileupload({
                 multipart: true,
@@ -251,22 +262,22 @@ $(function () {
                 formData: function(form){
                     var data = form.serializeArray();
                     var fh = this.files[0];
+                    console.log(fh);
                     // 首先，为该文件生成一个唯一ID
                     // generate_random_string() 函数在 public/assets/js/helper.js 文件中有定义
                     var fileUniqKey = fh.name + ':' + generate_random_string(20);
 
-                    // 然后构造 input[name="action"] 的值
-                    // generate_rs_put_path() 在 public/assets/js/helper.js 中有定义
-                    var actionString = generate_rs_put_path($bucketName, fileUniqKey, fh.type);
 
                     // 给表单添加 input[name="action"] 字段
-                    data.push({name: 'action', value: actionString});
+                    data.push({name: 'key', value: fileUniqKey});
 
                     // 构造 input[name="params"] 字段的值
                     var callbackParams = 'file_name='+fh.name+'&file_key='+fileUniqKey+'&file_type='+fh.type+'&file_size='+fh.size;
 
                     // 给表单添加 input[name="params"] 字段
                     data.push({name: 'params', value: callbackParams});
+
+                    data.push({name: 'token', value: resp.data.token});
 
                     return data;
                 }

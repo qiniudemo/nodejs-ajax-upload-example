@@ -12,7 +12,7 @@
 
 1. 安装依赖库
 
-    `npm install express qiniu`
+    `npm install `
 
 2. 获取示例程序源代码：
 
@@ -22,7 +22,7 @@
 
 3. 编辑 `nodejs-ajax-upload-example/app/server.js` 文件， 修改其中配置项 `qiniu.conf.ACCESS_KEY` 和 `qiniu.conf.SECRET_KEY` 的值。参考 [应用接入：获取Access Key 和 Secret Key](http://docs.qiniutek.com/v2/api/auth/#app-access)
 
-4. 在 `nodejs-ajax-upload-example/app` 目录下运行命令：`node server.js`
+4. 在 `nodejs-ajax-upload-example/app` 目录下运行命令：`node index.js`
 
 5. 用浏览器打开 `nodejs-ajax-upload-example/public/index.html` 进行体验
 
